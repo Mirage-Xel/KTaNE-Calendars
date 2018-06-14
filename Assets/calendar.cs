@@ -1549,4 +1549,348 @@ public class calendar : MonoBehaviour {
         }
         correctDayIndex = x;
     }
+#pragma warning disable 414
+    private string TwitchHelpMessage = "Use !{0} left or !{0} right to cycle left or right one month at a time. Use !{0} press # to press a certain day. Use !{0} [first 3 letters of a month name] to cycle to the selected month.";
+#pragma warning restore 414
+    public KMSelectable[] ProcessTwitchCommand(string command)
+    {
+        KMSelectable[] ans;
+
+        if (command.Trim().ToLowerInvariant().StartsWith("press"))
+        {
+            ans = new KMSelectable[1];
+            command = command.Substring(6, command.Length - 6);
+            int buttonIndex;
+            if(!Int32.TryParse(command, out buttonIndex))
+            {
+                return null;
+            }
+            buttonIndex--;
+            
+            if (buttonIndex >= 0 && buttonIndex < 31)
+            {
+                ans[0] = days[buttonIndex];
+                if(buttonIndex==30 && (currentMonthIndex == 1 || currentMonthIndex == 3 || currentMonthIndex == 5 || currentMonthIndex == 8 || currentMonthIndex == 10))
+                {
+                    return null;
+                }
+                if(buttonIndex==29 && currentMonthIndex == 1)
+                {
+                    return null;
+                }
+                if (buttonIndex == 28 && !leapYear && currentMonthIndex == 1)
+                {
+                    return null;
+                }
+                return ans;
+            }
+            else
+            {
+                return null;
+            }
+        } else if (command.Trim().ToLowerInvariant().StartsWith("left"))
+        {
+            Debug.LogFormat("Left entered");
+            ans = new KMSelectable[1];
+            ans[0] = left;
+            return ans;
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("right"))
+        {
+            Debug.LogFormat("Right entered");
+            ans = new KMSelectable[1];
+            ans[0] = right;
+            return ans;
+        } else if (command.Trim().ToLowerInvariant().StartsWith("jan"))
+        {
+            if (currentMonthIndex == 0)
+            {
+                return null;
+            } else
+            {
+                int count = Math.Abs(currentMonthIndex - 0);
+                ans = new KMSelectable[count];
+                for (int i=0; i<count; i++)
+                {
+                    if (currentMonthIndex - 0 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            } 
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("feb"))
+        {
+            if (currentMonthIndex == 1)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 1);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 1 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("mar"))
+        {
+            if (currentMonthIndex == 2)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 2);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 2 > 0)
+                    {
+                        ans[i] = left;
+                    } else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("apr"))
+        {
+            if (currentMonthIndex == 3)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 3);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 3 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("may"))
+        {
+            if (currentMonthIndex == 4)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 4);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 4 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("jun"))
+        {
+            if (currentMonthIndex == 5)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 5);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 5 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("jul"))
+        {
+            if (currentMonthIndex == 6)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 6);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 6 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("aug"))
+        {
+            if (currentMonthIndex == 7)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 7);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 7 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("sep"))
+        {
+            if (currentMonthIndex == 8)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 8);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 8 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("oct"))
+        {
+            if (currentMonthIndex == 9)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 9);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 9 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("nov"))
+        {
+            if (currentMonthIndex == 10)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 10);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 10 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("dec"))
+        {
+            if (currentMonthIndex == 11)
+            {
+                return null;
+            }
+            else
+            {
+                int count = Math.Abs(currentMonthIndex - 11);
+                ans = new KMSelectable[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (currentMonthIndex - 11 > 0)
+                    {
+                        ans[i] = left;
+                    }
+                    else
+                    {
+                        ans[i] = right;
+                    }
+                }
+                return ans;
+            }
+        }
+        else
+        {
+            return null;
+        }
+
+    }
 }
