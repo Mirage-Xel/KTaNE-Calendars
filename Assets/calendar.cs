@@ -35,13 +35,21 @@ public class calendar : MonoBehaviour {
     private int Nov = 10;
     private int Dec = 11;
 
-    public String[] holidays = new String[18];
+    public String[] holidayNames = new String[18];
+    public GameObject[] holidayCircles = new GameObject[18];
+    public GameObject goldenLeft;
+    public GameObject goldenRight;
+    public GameObject kwanLeft;
+    public GameObject kwanRight;
     private int holiday = 0;
+    public GameObject holidayObject;
+    private int groundhogPressIndex = 0;
 
     private bool leapYear = false;
     private int currentMonthIndex = 0;
     public String[] monthNames = new String[12];
     public KMSelectable[] days = new KMSelectable[31];
+    public GameObject[] daysObj = new GameObject[31];
     public KMSelectable left;
     public KMSelectable right;
     public TextMesh monthText;
@@ -50,7 +58,7 @@ public class calendar : MonoBehaviour {
 
     public Material[] LEDColors; //0=Green,1=Yellow,2=Red,3=Blue
 
-    public int season = 0;       //0=Spring,1=Summer,2=Autumn,3=Winter
+    private int season = 0;       //0=Spring,1=Summer,2=Autumn,3=Winter
 
     private int correctDayIndex;
     private int correctMonthIndex;
@@ -66,7 +74,99 @@ public class calendar : MonoBehaviour {
 
     private void Awake()
     {
-        //handle button presses
+        left.OnInteract += delegate ()
+        {
+            handlePressLeft();
+            return false;
+        };
+        right.OnInteract += delegate ()
+        {
+            handlePressRight();
+            return false;
+        };
+        for (int i = 0; i < 31; i++)
+        {
+            int j = i;
+            days[i].OnInteract += delegate ()
+            {
+                handleDayPress(j);
+                return false;
+            };
+        }
+    }
+
+    void handleDayPress(int index)
+    {
+        newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, days[index].transform);
+        if (!_lightsOn || _isSolved) return;
+        if (holiday == 10)
+        {
+            if (currentMonthIndex == correctMonthIndex)
+            {
+                groundhogPressIndex++;
+                if (groundhogPressIndex == 3)
+                {
+                    module.HandlePass();
+                } else
+                {
+                    newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.Strike, days[index].transform);
+                }
+            } else
+            {
+                Debug.LogFormat("[Calendar #{0}] Incorrect month selected. Input: {1}. Expected: {2}", _moduleId, currentMonthIndex + 1, correctMonthIndex + 1);
+                Debug.LogFormat("[Calendar #{0}] If you feel that this strike is an error, please contact AAces as soon as possible so we can get this error sorted out (Remember, the groundhog rule is in play). Have a copy of this log file handy. Discord: AAces#0908", _moduleId);
+                module.HandleStrike();
+                groundhogPressIndex = 0;
+            }
+            return;
+        }
+        if(currentMonthIndex == correctMonthIndex)
+        {
+            if(index == correctDayIndex)
+            {
+                module.HandlePass();
+                _isSolved = true;
+            }
+            else
+            {
+                module.HandleStrike();
+                Debug.LogFormat("[Calendar #{0}] Incorrect day selected. Input: {1}. Expected: {2}", _moduleId, index+1, correctDayIndex+1);
+                Debug.LogFormat("[Calendar #{0}] If you feel that this strike is an error, please contact AAces as soon as possible so we can get this error sorted out. Have a copy of this log file handy. Discord: AAces#0908", _moduleId);
+            }
+        } else
+        {
+            module.HandleStrike();
+            Debug.LogFormat("[Calendar #{0}] Incorrect month selected. Input: {1}. Expected: {2}", _moduleId, currentMonthIndex + 1, correctMonthIndex + 1);
+            if(index != correctDayIndex)
+            {
+                Debug.LogFormat("[Calendar #{0}] Incorrect day selected. Input: {1}. Expected: {2}", _moduleId, index + 1, correctDayIndex + 1);
+            }
+            Debug.LogFormat("[Calendar #{0}] If you feel that this strike is an error, please contact AAces as soon as possible so we can get this error sorted out. Have a copy of this log file handy. Discord: AAces#0908", _moduleId);
+        }
+    }
+
+    void handlePressRight()
+    {
+        newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, right.transform);
+        if (!_lightsOn || _isSolved) return;
+        currentMonthIndex++;
+        if (currentMonthIndex > 11)
+        {
+            currentMonthIndex = 0;
+        }
+        displayMonth();
+    }
+
+    void handlePressLeft()
+    {
+        newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, left.transform);
+        if (!_lightsOn || _isSolved) return;
+        currentMonthIndex--;
+        if (currentMonthIndex < 0)
+        {
+            currentMonthIndex = 11;
+        }
+        displayMonth();
     }
 
     void Activate()
@@ -106,13 +206,26 @@ public class calendar : MonoBehaviour {
         if (leapChance == 0)
         {
             leapYear = true;
+            Debug.LogFormat("[Calendar #{0}] Is a leap year. (This is seperate from real life)", _moduleId);
         } else
         {
             leapYear = false;
+            Debug.LogFormat("[Calendar #{0}] Is not a leap year. (This is seperate from real life)", _moduleId);
         }
+        holidayObject.SetActive(true);
         holiday = Random.Range(0, 18);
-        Debug.LogFormat("[Calendar #{0}] Holiday selected: {1}", _moduleId, holidays[holiday]);
+        Debug.LogFormat("[Calendar #{0}] Holiday selected: {1}", _moduleId, holidayNames[holiday]);
+        for(int i=0; i<18; i++)
+        {
+            holidayCircles[i].SetActive(false);
+        }
+        goldenLeft.SetActive(false);
+        goldenRight.SetActive(false);
+        kwanLeft.SetActive(false);
+        kwanRight.SetActive(false);
+        displayMonth();
         getCorrectAnswer();
+        Debug.LogFormat("[Calendar #{0}] Correct month: {1}. Correct day: {2}. NOTE: If the holiday is groundhog day, the day has no effect.", _moduleId, correctMonthIndex+1, correctDayIndex+1);
     }
 
     int getSeason(int day, int month)
@@ -172,10 +285,259 @@ public class calendar : MonoBehaviour {
                 }
             default:
                 Debug.LogFormat("[Calendar #{0}] Your current month doesn't seem to exist. I got {1} as your month. Auto solving.", _moduleId, month);
+                Debug.LogFormat("[Calendar #{0}] If you feel that this is an error, please contact AAces as soon as possible so we can get this error sorted out. Have a copy of this log file handy. Discord: AAces#0908", _moduleId);
                 module.HandlePass();
+                _isSolved = true;
                 return 4;
         }
 
+    }
+
+    void displayMonth()
+    {
+        monthText.text = monthNames[currentMonthIndex];
+        switch (currentMonthIndex)
+        {
+            case 0:
+                for(int i = 0; i<31; i++) {
+                    daysObj[i].SetActive(true);
+                }
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 1)
+                {
+                    holidayCircles[1].SetActive(true);
+                } else if(holiday == 8)
+                {
+                    holidayCircles[8].SetActive(true);
+                } else if(holiday == 12)
+                {
+                    kwanRight.SetActive(true);
+                }else if (holiday == 17)
+                {
+                    holidayCircles[17].SetActive(true);
+                }
+                break;
+            case 1:
+                if (leapYear)
+                {
+                    daysObj[30].SetActive(false);
+                    daysObj[29].SetActive(false);
+                    daysObj[28].SetActive(true);
+                } else
+                {
+                    daysObj[30].SetActive(false);
+                    daysObj[29].SetActive(false);
+                    daysObj[28].SetActive(false);
+                }
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 10)
+                {
+                    holidayCircles[10].SetActive(true);
+                }
+                else if (holiday == 15)
+                {
+                    holidayCircles[15].SetActive(true);
+                }
+                break;
+            case 2:
+                for (int i = 0; i < 31; i++)
+                {
+                    daysObj[i].SetActive(true);
+                }
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 14)
+                {
+                    holidayCircles[14].SetActive(true);
+                }
+                break;
+            case 3:
+                daysObj[30].SetActive(false);
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 0)
+                {
+                    holidayCircles[0].SetActive(true);
+                }
+                else if (holiday == 7)
+                {
+                    holidayCircles[7].SetActive(true);
+                }
+                else if (holiday == 9)
+                {
+                    goldenLeft.SetActive(true);
+                }
+                break;
+            case 4:
+                for (int i = 0; i < 31; i++)
+                {
+                    daysObj[i].SetActive(true);
+                }
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 4)
+                {
+                    holidayCircles[4].SetActive(true);
+                }
+                else if (holiday == 9)
+                {
+                    goldenRight.SetActive(true);
+                }
+                break;
+            case 5:
+                daysObj[30].SetActive(false);
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 13)
+                {
+                    holidayCircles[13].SetActive(true);
+                }
+                break;
+            case 6:
+                for (int i = 0; i < 31; i++)
+                {
+                    daysObj[i].SetActive(true);
+                }
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 2)
+                {
+                    holidayCircles[2].SetActive(true);
+                }
+                break;
+            case 7:
+                for (int i = 0; i < 31; i++)
+                {
+                    daysObj[i].SetActive(true);
+                }
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                break;
+            case 8:
+                daysObj[30].SetActive(false);
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                break;
+            case 9:
+                for (int i = 0; i < 31; i++)
+                {
+                    daysObj[i].SetActive(true);
+                }
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 5)
+                {
+                    holidayCircles[5].SetActive(true);
+                }
+                else if (holiday == 6)
+                {
+                    holidayCircles[6].SetActive(true);
+                }
+                break;
+            case 10:
+                daysObj[30].SetActive(false);
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 11)
+                {
+                    holidayCircles[11].SetActive(true);
+                }
+                else if (holiday == 16)
+                {
+                    holidayCircles[16].SetActive(true);
+                }
+                break;
+            case 11:
+                for (int i = 0; i < 31; i++)
+                {
+                    daysObj[i].SetActive(true);
+                }
+                for (int i = 0; i < 18; i++)
+                {
+                    holidayCircles[i].SetActive(false);
+                }
+                goldenLeft.SetActive(false);
+                goldenRight.SetActive(false);
+                kwanLeft.SetActive(false);
+                kwanRight.SetActive(false);
+                if (holiday == 3)
+                {
+                    holidayCircles[3].SetActive(true);
+                }
+                else if (holiday == 12)
+                {
+                    kwanLeft.SetActive(true);
+                }
+                break;
+        }
     }
 
     void getCorrectAnswer()
@@ -427,6 +789,764 @@ public class calendar : MonoBehaviour {
                 }
                 break;
         }
-        //Get correct day
+        int num = serialRightmost;
+        int x = 1;
+        if (holiday == 0)
+        {
+            num = serialLeftmost;
+        }
+        switch (holiday)
+        {
+            case 0:
+                switch (num)
+                {
+                    case 0:
+                        x = 0;
+                        break;
+                    case 1:
+                        x = 1;
+                        break;
+                    case 2:
+                        x = 2;
+                        break;
+                    case 3:
+                        x = 3;
+                        break;
+                    case 4:
+                        x = 4;
+                        break;
+                    case 5:
+                        x = 5;
+                        break;
+                    case 6:
+                        x = 6;
+                        break;
+                    case 7:
+                        x = 7;
+                        break;
+                    case 8:
+                        x = 8;
+                        break;
+                    case 9:
+                        x = 9;
+                        break;
+                }
+                break;
+            case 1:
+                switch (num)
+                {
+                    case 0:
+                        x = 18;
+                        break;
+                    case 1:
+                        x = 4;
+                        break;
+                    case 2:
+                        x = 23;
+                        break;
+                    case 3:
+                        x = 2;
+                        break;
+                    case 4:
+                        if (leapYear)
+                        {
+                            if (correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                            {
+                                x = 0;
+                            } else
+                            {
+                                x = 28;
+                            }
+                        } else
+                        {
+                            if (correctMonthIndex==1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                            {
+                                x = 0;
+                            }
+                            else
+                            {
+                                x = 28;
+                            }
+                        }
+                        break;
+                    case 5:
+                        x = 27;
+                        break;
+                    case 6:
+                        x = 17;
+                        break;
+                    case 7:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 3;
+                        }
+                        else
+                        {
+                            x = 29;
+                        }
+                        break;
+                    case 8:
+                        x = 12;
+                        break;
+                    case 9:
+                        x = 11;
+                        break;
+                }
+                break;
+            case 2:
+                switch (num)
+                {
+                    case 0:
+                        x = 21;
+                        break;
+                    case 1:
+                        x = 13;
+                        break;
+                    case 2:
+                        x = 5;
+                        break;
+                    case 3:
+                        x = 10;
+                        break;
+                    case 4:
+                        x = 7;
+                        break;
+                    case 5:
+                        x = 18;
+                        break;
+                    case 6:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 6;
+                        }
+                        else
+                        {
+                            x = 30;
+                        }
+                        break;
+                    case 7:
+                        x = 22;
+                        break;
+                    case 8:
+                        x = 27;
+                        break;
+                    case 9:
+                        x = 25;
+                        break;
+                }
+                break;
+            case 3:
+                switch (num)
+                {
+                    case 0:
+                        x = 11;
+                        break;
+                    case 1:
+                        x = 1;
+                        break;
+                    case 2:
+                        x = 10;
+                        break;
+                    case 3:
+                        x = 6;
+                        break;
+                    case 4:
+                        x = 17;
+                        break;
+                    case 5:
+                        x = 23;
+                        break;
+                    case 6:
+                        x = 3;
+                        break;
+                    case 7:
+                        x = 13;
+                        break;
+                    case 8:
+                        x = 9;
+                        break;
+                    case 9:
+                        x = 19;
+                        break;
+                }
+                break;
+            case 4:
+                switch (num)
+                {
+                    case 0:
+                        if (leapYear)
+                        {
+                            if (correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                            {
+                                x = 2;
+                            }
+                            else
+                            {
+                                x = 28;
+                            }
+                        }
+                        else
+                        {
+                            if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                            {
+                                x = 2;
+                            }
+                            else
+                            {
+                                x = 28;
+                            }
+                        }
+                        break;
+                    case 1:
+                        x = 18;
+                        break;
+                    case 2:
+                        x = 26;
+                        break;
+                    case 3:
+                        x = 14;
+                        break;
+                    case 4:
+                        x = 8;
+                        break;
+                    case 5:
+                        x = 15;
+                        break;
+                    case 6:
+                        x = 18;
+                        break;
+                    case 7:
+                        x = 13;
+                        break;
+                    case 8:
+                        x = 8;
+                        break;
+                    case 9:
+                        x = 2;
+                        break;
+                }
+                break;
+            case 5:
+                switch (num)
+                {
+                    case 0:
+                        x = 3;
+                        break;
+                    case 1:
+                        x = 26;
+                        break;
+                    case 2:
+                        x = 7;
+                        break;
+                    case 3:
+                        x = 21;
+                        break;
+                    case 4:
+                        x = 9;
+                        break;
+                    case 5:
+                        x = 13;
+                        break;
+                    case 6:
+                        x = 12;
+                        break;
+                    case 7:
+                        x = 27;
+                        break;
+                    case 8:
+                        x = 12;
+                        break;
+                    case 9:
+                        x = 20;
+                        break;
+                }
+                break;
+            case 6:
+                switch (num)
+                {
+                    case 0:
+                        x = 3;
+                        break;
+                    case 1:
+                        x = 15;
+                        break;
+                    case 2:
+                        x = 20;
+                        break;
+                    case 3:
+                        x = 14;
+                        break;
+                    case 4:
+                        x = 26;
+                        break;
+                    case 5:
+                        x = 5;
+                        break;
+                    case 6:
+                        x = 24;
+                        break;
+                    case 7:
+                        x = 12;
+                        break;
+                    case 8:
+                        x = 1;
+                        break;
+                    case 9:
+                        x = 8;
+                        break;
+                }
+                break;
+            case 7:
+                switch (num)
+                {
+                    case 0:
+                        x = 22;
+                        break;
+                    case 1:
+                        x = 12;
+                        break;
+                    case 2:
+                        x = 24;
+                        break;
+                    case 3:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 2;
+                        }
+                        else
+                        {
+                            x = 29;
+                        }
+                        break;
+                    case 4:
+                        x = 3;
+                        break;
+                    case 5:
+                        x = 10;
+                        break;
+                    case 6:
+                        x = 26;
+                        break;
+                    case 7:
+                        x = 14;
+                        break;
+                    case 8:
+                        x = 20;
+                        break;
+                    case 9:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 4;
+                        }
+                        else
+                        {
+                            x = 30;
+                        }
+                        break;
+                }
+                break;
+            case 8:
+                switch (num)
+                {
+                    case 0:
+                        x = 14;
+                        break;
+                    case 1:
+                        x = 0;
+                        break;
+                    case 2:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 6;
+                        }
+                        else
+                        {
+                            x = 30;
+                        }
+                        break;
+                    case 3:
+                        x = 16;
+                        break;
+                    case 4:
+                        x = 25;
+                        break;
+                    case 5:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 7;
+                        }
+                        else
+                        {
+                            x = 29;
+                        }
+                        break;
+                    case 6:
+                        x = 23;
+                        break;
+                    case 7:
+                        x = 8;
+                        break;
+                    case 8:
+                        x = 2;
+                        break;
+                    case 9:
+                        x = 24;
+                        break;
+                }
+                break;
+            case 9:
+                switch (num)
+                {
+                    case 0:
+                        x = 7;
+                        break;
+                    case 1:
+                        x = 19;
+                        break;
+                    case 2:
+                        x = 16;
+                        break;
+                    case 3:
+                        x = 15;
+                        break;
+                    case 4:
+                        x = 22;
+                        break;
+                    case 5:
+                        x = 15;
+                        break;
+                    case 6:
+                        x = 0;
+                        break;
+                    case 7:
+                        x = 21;
+                        break;
+                    case 8:
+                        x = 23;
+                        break;
+                    case 9:
+                        x = 4;
+                        break;
+                }
+                break;
+            case 11:
+                switch (num)
+                {
+                    case 0:
+                        x = 25;
+                        break;
+                    case 1:
+                        x = 15;
+                        break;
+                    case 2:
+                        x = 2;
+                        break;
+                    case 3:
+                        x = 25;
+                        break;
+                    case 4:
+                        if (leapYear)
+                        {
+                            if (correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                            {
+                                x = 6;
+                            }
+                            else
+                            {
+                                x = 28;
+                            }
+                        }
+                        else
+                        {
+                            if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                            {
+                                x = 6;
+                            }
+                            else
+                            {
+                                x = 28;
+                            }
+                        }
+                        break;
+                    case 5:
+                        x = 17;
+                        break;
+                    case 6:
+                        x = 21;
+                        break;
+                    case 7:
+                        x = 24;
+                        break;
+                    case 8:
+                        x = 16;
+                        break;
+                    case 9:
+                        x = 10;
+                        break;
+                }
+                break;
+            case 12:
+                switch (num)
+                {
+                    case 0:
+                        x = 20;
+                        break;
+                    case 1:
+                        x = 8;
+                        break;
+                    case 2:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 5;
+                        }
+                        else
+                        {
+                            x = 29;
+                        }
+                        break;
+                    case 3:
+                        x = 23;
+                        break;
+                    case 4:
+                        x = 27;
+                        break;
+                    case 5:
+                        x = 5;
+                        break;
+                    case 6:
+                        x = 20;
+                        break;
+                    case 7:
+                        x = 25;
+                        break;
+                    case 8:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 1;
+                        }
+                        else
+                        {
+                            x = 30;
+                        }
+                        break;
+                    case 9:
+                        x = 7;
+                        break;
+                }
+                break;
+            case 13:
+                switch (num)
+                {
+                    case 0:
+                        x = 9;
+                        break;
+                    case 1:
+                        if (leapYear)
+                        {
+                            if (correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                            {
+                                x = 1;
+                            }
+                            else
+                            {
+                                x = 28;
+                            }
+                        }
+                        else
+                        {
+                            if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                            {
+                                x = 1;
+                            }
+                            else
+                            {
+                                x = 28;
+                            }
+                        }
+                        break;
+                    case 2:
+                        x = 11;
+                        break;
+                    case 3:
+                        x = 23;
+                        break;
+                    case 4:
+                        x = 14;
+                        break;
+                    case 5:
+                        x = 19;
+                        break;
+                    case 6:
+                        x = 4;
+                        break;
+                    case 7:
+                        x = 26;
+                        break;
+                    case 8:
+                        x = 24;
+                        break;
+                    case 9:
+                        x = 6;
+                        break;
+                }
+                break;
+            case 14:
+                switch (num)
+                {
+                    case 0:
+                        x = 1;
+                        break;
+                    case 1:
+                        x = 27;
+                        break;
+                    case 2:
+                        x = 17;
+                        break;
+                    case 3:
+                        x = 12;
+                        break;
+                    case 4:
+                        x = 20;
+                        break;
+                    case 5:
+                        x = 11;
+                        break;
+                    case 6:
+                        x = 2;
+                        break;
+                    case 7:
+                        x = 9;
+                        break;
+                    case 8:
+                        x = 19;
+                        break;
+                    case 9:
+                        x = 0;
+                        break;
+                }
+                break;
+            case 15:
+                switch (num)
+                {
+                    case 0:
+                        x = 10;
+                        break;
+                    case 1:
+                        x = 5;
+                        break;
+                    case 2:
+                        x = 21;
+                        break;
+                    case 3:
+                        x = 13;
+                        break;
+                    case 4:
+                        x = 18;
+                        break;
+                    case 5:
+                        x = 26;
+                        break;
+                    case 6:
+                        x = 19;
+                        break;
+                    case 7:
+                        x = 6;
+                        break;
+                    case 8:
+                        x = 15;
+                        break;
+                    case 9:
+                        x = 22;
+                        break;
+                }
+                break;
+            case 16:
+                switch (num)
+                {
+                    case 0:
+                        x = 13;
+                        break;
+                    case 1:
+                        x = 6;
+                        break;
+                    case 2:
+                        x = 22;
+                        break;
+                    case 3:
+                        x = 16;
+                        break;
+                    case 4:
+                        x = 2;
+                        break;
+                    case 5:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 0;
+                        }
+                        else
+                        {
+                            x = 30;
+                        }
+                        break;
+                    case 6:
+                        x = 1;
+                        break;
+                    case 7:
+                        x = 24;
+                        break;
+                    case 8:
+                        x = 16;
+                        break;
+                    case 9:
+                        x = 10;
+                        break;
+                }
+                break;
+            case 17:
+                switch (num)
+                {
+                    case 0:
+                        x = 16;
+                        break;
+                    case 1:
+                        x = 23;
+                        break;
+                    case 2:
+                        x = 14;
+                        break;
+                    case 3:
+                        x = 19;
+                        break;
+                    case 4:
+                        x = 0;
+                        break;
+                    case 5:
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        {
+                            x = 8;
+                        }
+                        else
+                        {
+                            x = 29;
+                        }
+                        break;
+                    case 6:
+                        x = 27;
+                        break;
+                    case 7:
+                        x = 5;
+                        break;
+                    case 8:
+                        x = 6;
+                        break;
+                    case 9:
+                        x = 13;
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+        correctDayIndex = x;
     }
 }

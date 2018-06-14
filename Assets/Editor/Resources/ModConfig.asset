@@ -13,7 +13,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: calendar
   title: Calendar
-  description: 
+  description: 'Select a day based on the given color strip, holiday, and current
+    local time.
+
+
+    Expect a graphical overhaul in the near future.
+
+
+    Module ID: calendar
+
+
+    Github link: https://github.com/AAces/KTaNE-Calendars
+
+
+    Manual link: https://ktane.timwi.de/
+
+
+    Module Idea and Manual Concept: MarioXTurn
+
+    Module Modeling and Development: AAces'
   version: 1.0
   outputFolder: build
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: cb8d36dedc6bd62419d0f547e766f61c, type: 3}
