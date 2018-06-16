@@ -107,6 +107,7 @@ public class calendar : MonoBehaviour {
                 if (groundhogPressIndex == 3)
                 {
                     module.HandlePass();
+                    newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, days[index].transform);
                 } else
                 {
                     newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.Strike, days[index].transform);
@@ -125,6 +126,7 @@ public class calendar : MonoBehaviour {
             if(index == correctDayIndex)
             {
                 module.HandlePass();
+                newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, days[index].transform);
                 _isSolved = true;
             }
             else
