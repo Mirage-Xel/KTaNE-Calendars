@@ -1552,7 +1552,7 @@ public class calendar : MonoBehaviour {
         correctDayIndex = x;
     }
 #pragma warning disable 414
-    private string TwitchHelpMessage = "Use !{0} left or !{0} right to cycle left or right one month at a time. Use !{0} press # to press a certain day. Use !{0} [first 3 letters of a month name] to cycle to the selected month.";
+    private string TwitchHelpMessage = "Use !{0} left or !{0} right to cycle left or right one month at a time. Use !{0} press # to press a certain day. Use !{0} [month name] to cycle to the selected month.";
 #pragma warning restore 414
     public KMSelectable[] ProcessTwitchCommand(string command)
     {
