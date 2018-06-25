@@ -17,16 +17,15 @@ MonoBehaviour:
     local time.
 
 
-    Expect a graphical overhaul in the near future.
-
-
     Module ID: calendar
 
 
     Github link: https://github.com/AAces/KTaNE-Calendars
 
 
-    Manual link: https://ktane.timwi.de/
+    Manual HTML: https://ktane.timwi.de/HTML/Calendar.html
+
+    Manual PDF: https://ktane.timwi.de/PDF/Calendar.pdf
 
 
     Module Idea and Manual Concept: MarioXTurn

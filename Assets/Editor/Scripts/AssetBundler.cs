@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 /// <summary>
@@ -44,7 +46,7 @@ public class AssetBundler
     /// <summary>
     /// Folders which should not be included in the asset bundling process.
     /// </summary>
-    public static string[] EXCLUDED_FOLDERS = new string[] { "Assets/Editor", "Assets/TestHarness" };
+    public static string[] EXCLUDED_FOLDERS = new string[] { "Assets/Editor", "Assets/TestHarness", "Assets/QcPrimitives/Editor" };
 
 
     #region Internal bundler Variables
@@ -234,7 +236,7 @@ public class AssetBundler
         string outputFilename = outputFolder + "/" + assemblyName + ".dll";
 
         List<string> managedReferences = AssetDatabase.GetAllAssetPaths()
-            .Where(path => path.EndsWith(".dll") && path.StartsWith("Assets/Plugins/Managed"))
+            .Where(path => path.EndsWith(".dll") && path.StartsWith("Assets/Plugins/Managed") && !path.StartsWith("Assets/QcPrimitives/Editor"))
             .Select(path => "Assets/Plugins/Managed/" + Path.GetFileNameWithoutExtension(path))
             .ToList();
 

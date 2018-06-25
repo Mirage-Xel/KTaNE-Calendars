@@ -5,7 +5,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using KMHelper;
 using System;
-using System.Threading;
 using Random = UnityEngine.Random;
 using UnityEngine;
 
@@ -1552,7 +1551,7 @@ public class calendar : MonoBehaviour {
         correctDayIndex = x;
     }
 #pragma warning disable 414
-    private string TwitchHelpMessage = "Use !{0} left or !{0} right to cycle left or right one month at a time. Use !{0} press # to press a certain day. Use !{0} [month name] to cycle to the selected month.";
+    private string TwitchHelpMessage = "Use '!{0} holiday' to locate the circled holiday. Use '!{0} left' or '!{0} right' to cycle left or right one month at a time. Use '!{0} press #' to press a certain day. Use '!{0} [month name]' to cycle to the selected month.";
 #pragma warning restore 414
     public KMSelectable[] ProcessTwitchCommand(string command)
     {
@@ -1603,7 +1602,33 @@ public class calendar : MonoBehaviour {
             ans = new KMSelectable[1];
             ans[0] = right;
             return ans;
-        } else if (command.Trim().ToLowerInvariant().StartsWith("jan"))
+        } else if (command.Trim().ToLowerInvariant().StartsWith("holiday"))
+        {
+            switch (holiday)
+            {
+                case 1: case 8: case 17:
+                    return ProcessTwitchCommand("jan");
+                case 10: case 15:
+                    return ProcessTwitchCommand("feb");
+                case 14:
+                    return ProcessTwitchCommand("mar");
+                case 0: case 7: case 9:
+                    return ProcessTwitchCommand("apr");
+                case 4:
+                    return ProcessTwitchCommand("may");
+                case 13:
+                    return ProcessTwitchCommand("jun");
+                case 2:
+                    return ProcessTwitchCommand("jul");
+                case 5: case 6:
+                    return ProcessTwitchCommand("oct");
+                case 11: case 16:
+                    return ProcessTwitchCommand("nov");
+                case 3: case 12:
+                    return ProcessTwitchCommand("dec");
+            }
+        }
+        else if (command.Trim().ToLowerInvariant().StartsWith("jan"))
         {
             if (currentMonthIndex == 0)
             {
@@ -1893,6 +1918,6 @@ public class calendar : MonoBehaviour {
         {
             return null;
         }
-
+        return null;
     }
 }
