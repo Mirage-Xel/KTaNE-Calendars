@@ -849,25 +849,13 @@ public class calendar : MonoBehaviour {
                         x = 2;
                         break;
                     case 4:
-                        if (leapYear)
+                        if (!leapYear && correctMonthIndex == 1)
                         {
-                            if (correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
-                            {
-                                x = 0;
-                            } else
-                            {
-                                x = 28;
-                            }
-                        } else
-                        {
-                            if (correctMonthIndex==1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
-                            {
-                                x = 0;
-                            }
-                            else
-                            {
-                                x = 28;
-                            }
+                            x = 0;
+                        }
+                        else
+                        { 
+                            x = 28;
                         }
                         break;
                     case 5:
@@ -877,7 +865,7 @@ public class calendar : MonoBehaviour {
                         x = 17;
                         break;
                     case 7:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1)
                         {
                             x = 3;
                         }
@@ -975,27 +963,13 @@ public class calendar : MonoBehaviour {
                 switch (num)
                 {
                     case 0:
-                        if (leapYear)
+                        if (!leapYear && correctMonthIndex == 1)
                         {
-                            if (correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
-                            {
-                                x = 2;
-                            }
-                            else
-                            {
-                                x = 28;
-                            }
+                            x = 2;
                         }
                         else
                         {
-                            if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
-                            {
-                                x = 2;
-                            }
-                            else
-                            {
-                                x = 28;
-                            }
+                            x = 28;
                         }
                         break;
                     case 1:
@@ -1110,7 +1084,7 @@ public class calendar : MonoBehaviour {
                         x = 24;
                         break;
                     case 3:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1)
                         {
                             x = 2;
                         }
@@ -1172,7 +1146,7 @@ public class calendar : MonoBehaviour {
                         x = 25;
                         break;
                     case 5:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1)
                         {
                             x = 7;
                         }
@@ -1246,27 +1220,13 @@ public class calendar : MonoBehaviour {
                         x = 25;
                         break;
                     case 4:
-                        if (leapYear)
+                        if (!leapYear && correctMonthIndex == 1)
                         {
-                            if (correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
-                            {
-                                x = 6;
-                            }
-                            else
-                            {
-                                x = 28;
-                            }
+                            x = 6;
                         }
                         else
                         {
-                            if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
-                            {
-                                x = 6;
-                            }
-                            else
-                            {
-                                x = 28;
-                            }
+                            x = 28;
                         }
                         break;
                     case 5:
@@ -1296,7 +1256,7 @@ public class calendar : MonoBehaviour {
                         x = 8;
                         break;
                     case 2:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1)
                         {
                             x = 5;
                         }
@@ -1342,27 +1302,13 @@ public class calendar : MonoBehaviour {
                         x = 9;
                         break;
                     case 1:
-                        if (leapYear)
+                        if (!leapYear && correctMonthIndex == 1)
                         {
-                            if (correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
-                            {
-                                x = 1;
-                            }
-                            else
-                            {
-                                x = 28;
-                            }
+                            x = 1;
                         }
                         else
-                        {
-                            if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
-                            {
-                                x = 1;
-                            }
-                            else
-                            {
-                                x = 28;
-                            }
+                        { 
+                            x = 28;
                         }
                         break;
                     case 2:
@@ -1522,7 +1468,7 @@ public class calendar : MonoBehaviour {
                         x = 0;
                         break;
                     case 5:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1)
                         {
                             x = 8;
                         }
