@@ -1423,7 +1423,7 @@ public class calendar : MonoBehaviour {
                         x = 16;
                         break;
                     case 4:
-                        x = 2;
+                        x = 4;
                         break;
                     case 5:
                         if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
