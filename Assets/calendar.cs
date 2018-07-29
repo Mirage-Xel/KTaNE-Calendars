@@ -21,6 +21,7 @@ public class calendar : MonoBehaviour {
     private int serialLeftmost;
     private int serialRightmost;
 
+    private Color red = new Color(255, 0, 0), green = new Color(0, 255, 0), blue = new Color(0, 0, 255), yellow = new Color(255, 255, 0);
     private int Jan = 0;
     private int Feb = 1;
     private int Mar = 2;
@@ -39,7 +40,7 @@ public class calendar : MonoBehaviour {
     public GameObject goldenLeft;
     public GameObject goldenRight;
     public GameObject kwanLeft;
-    public GameObject kwanRight;
+    public GameObject kwanRight, colorblindObj;
     private int holiday = 0;
     public GameObject holidayObject;
     private int groundhogPressIndex = 0;
@@ -51,7 +52,7 @@ public class calendar : MonoBehaviour {
     public GameObject[] daysObj = new GameObject[31];
     public KMSelectable left;
     public KMSelectable right;
-    public TextMesh monthText;
+    public TextMesh monthText, colorblindText;
     private int LEDColor;
     public GameObject LED;
 
@@ -186,23 +187,7 @@ public class calendar : MonoBehaviour {
         serialNumbers = info.GetSerialNumberNumbers().ToArray();
         serialLeftmost = serialNumbers[0];
         serialRightmost = serialNumbers[serialNumbers.Length - 1];
-        LEDColor = Random.Range(0,4);
-        LED.GetComponent<MeshRenderer>().material = LEDColors[LEDColor];
-        switch (LEDColor)
-        {
-            case 0:
-                Debug.LogFormat("[Calendar #{0}] LED Color: Green", _moduleId);
-                break;
-            case 1:
-                Debug.LogFormat("[Calendar #{0}] LED Color: Yellow", _moduleId);
-                break;
-            case 2:
-                Debug.LogFormat("[Calendar #{0}] LED Color: Red", _moduleId);
-                break;
-            case 3:
-                Debug.LogFormat("[Calendar #{0}] LED Color: Blue", _moduleId);
-                break;
-        }
+        setupLED();
         int leapChance = Random.Range(0, 4);
         if (leapChance == 0)
         {
@@ -227,6 +212,44 @@ public class calendar : MonoBehaviour {
         displayMonth();
         getCorrectAnswer();
         Debug.LogFormat("[Calendar #{0}] Correct month: {1}. Correct day: {2}. NOTE: If the holiday is groundhog day, the day has no effect.", _moduleId, correctMonthIndex+1, correctDayIndex+1);
+    }
+
+    void setupLED()
+    {
+        LEDColor = Random.Range(0, 4);
+        switch (LEDColor)
+        {
+            case 0:
+                Debug.LogFormat("[Calendar #{0}] LED Color: Green", _moduleId);
+                colorblindText.color = green;
+                colorblindText.text = "Green";
+                break;
+            case 1:
+                Debug.LogFormat("[Calendar #{0}] LED Color: Yellow", _moduleId);
+                colorblindText.color = yellow;
+                colorblindText.text = "Yellow";
+                break;
+            case 2:
+                Debug.LogFormat("[Calendar #{0}] LED Color: Red", _moduleId);
+                colorblindText.color = red;
+                colorblindText.text = "Red";
+                break;
+            case 3:
+                Debug.LogFormat("[Calendar #{0}] LED Color: Blue", _moduleId);
+                colorblindText.color = blue;
+                colorblindText.text = "Blue";
+                break;
+        }
+        if (GetComponent<KMColorblindMode>().ColorblindModeActive)
+        {
+            colorblindObj.SetActive(true);
+            Debug.LogFormat("[Calendar #{0}] Colorblind mode enabled.", _moduleId);
+        }
+        else
+        {
+            LED.GetComponent<MeshRenderer>().material = LEDColors[LEDColor];
+            colorblindObj.SetActive(false);
+        }
     }
 
     int getSeason(int day, int month)
