@@ -57,6 +57,7 @@ public class calendar : MonoBehaviour {
     public GameObject LED;
 
     public Material[] LEDColors; //0=Green,1=Yellow,2=Red,3=Blue
+    public Material off;
 
     private int season = 0;       //0=Spring,1=Summer,2=Autumn,3=Winter
 
@@ -1520,7 +1521,7 @@ public class calendar : MonoBehaviour {
         correctDayIndex = x;
     }
 #pragma warning disable 414
-    private string TwitchHelpMessage = "Use '!{0} holiday' to locate the circled holiday. Use '!{0} left' or '!{0} right' to cycle left or right one month at a time. Use '!{0} press #' to press a certain day. Use '!{0} [month name]' to cycle to the selected month.";
+    private string TwitchHelpMessage = "Use '!{0} holiday' to locate the circled holiday. Use '!{0} left' or '!{0} right' to cycle left or right one month at a time. Use '!{0} press #' to press a certain day. Use '!{0} [month name]' to cycle to the selected month. Use !{0} colorblind to enable colorblind mode.";
 #pragma warning restore 414
     public KMSelectable[] ProcessTwitchCommand(string command)
     {
@@ -1882,6 +1883,12 @@ public class calendar : MonoBehaviour {
                 }
                 return ans;
             }
+        }else if (command.Trim().ToLowerInvariant().StartsWith("colorblind"))
+        {
+            colorblindObj.SetActive(true);
+            Debug.LogFormat("[Calendar #{0}] Colorblind mode enabled via TP command.", _moduleId);
+            LED.GetComponent<MeshRenderer>().material = off;
+            return new KMSelectable[0];
         }
         else
         {
