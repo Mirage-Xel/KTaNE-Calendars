@@ -109,6 +109,9 @@ public class calendar : MonoBehaviour {
                 {
                     module.HandlePass();
                     newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, days[index].transform);
+                    LED.GetComponent<MeshRenderer>().material = off;
+                    _isSolved = true;
+                    Debug.LogFormat("[Calendar #{0}] Module Solved!", _moduleId);
                 } else
                 {
                     newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.Strike, days[index].transform);
@@ -129,6 +132,8 @@ public class calendar : MonoBehaviour {
                 module.HandlePass();
                 newAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, days[index].transform);
                 _isSolved = true;
+                LED.GetComponent<MeshRenderer>().material = off;
+                Debug.LogFormat("[Calendar #{0}] Module Solved!",_moduleId);
             }
             else
             {
