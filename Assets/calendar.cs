@@ -311,11 +311,11 @@ public class calendar : MonoBehaviour {
                 }
                 else
                 {
-                    return 0;
+                    return 2;
                 }
             default:
                 Debug.LogFormat("[Calendar #{0}] Your current month doesn't seem to exist. I got {1} as your month. Auto solving.", _moduleId, month);
-                Debug.LogFormat("[Calendar #{0}] If you feel that this is an error, please contact AAces as soon as possible so we can get this error sorted out. Have a copy of this log file handy. Discord: AAces#0908", _moduleId);
+                Debug.LogFormat("[Calendar #{0}] This sounds like it is an error, please contact AAces as soon as possible so we can get this error sorted out. Have a copy of this log file handy. Discord: AAces#0908", _moduleId);
                 module.HandlePass();
                 _isSolved = true;
                 return 4;
@@ -933,7 +933,7 @@ public class calendar : MonoBehaviour {
                         x = 18;
                         break;
                     case 6:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || correctMonthIndex == 10)
                         {
                             x = 6;
                         }
@@ -1138,7 +1138,7 @@ public class calendar : MonoBehaviour {
                         x = 20;
                         break;
                     case 9:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || correctMonthIndex == 10)
                         {
                             x = 4;
                         }
@@ -1159,7 +1159,7 @@ public class calendar : MonoBehaviour {
                         x = 0;
                         break;
                     case 2:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || correctMonthIndex == 10)
                         {
                             x = 6;
                         }
@@ -1310,7 +1310,7 @@ public class calendar : MonoBehaviour {
                         x = 25;
                         break;
                     case 8:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || correctMonthIndex == 10)
                         {
                             x = 1;
                         }
@@ -1455,7 +1455,7 @@ public class calendar : MonoBehaviour {
                         x = 4;
                         break;
                     case 5:
-                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || currentMonthIndex == 10)
+                        if (correctMonthIndex == 1 || correctMonthIndex == 3 || correctMonthIndex == 5 || correctMonthIndex == 8 || correctMonthIndex == 10)
                         {
                             x = 0;
                         }
