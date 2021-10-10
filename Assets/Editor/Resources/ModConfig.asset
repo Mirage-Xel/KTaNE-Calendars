@@ -31,6 +31,6 @@ MonoBehaviour:
     Module Idea and Manual Concept: MarioXTurn
 
     Module Modeling and Development: AAces'
-  version: 1.0
+  version: 1.0.1
   outputFolder: build
   previewImage: {fileID: 2800000, guid: cb8d36dedc6bd62419d0f547e766f61c, type: 3}
